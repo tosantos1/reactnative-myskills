@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,35 +11,51 @@ import {
 import { Button } from '../components/Button';
 import { SkillCard } from '../components/SkillCard';
 
+interface SkillData {
+  id: string;
+  name: string;
+}
+
 export function Home() {
   const [newSkill, setNewSkill] = useState('');
-  const [mySkills, setMySkills] = useState([]);
-  const [greetings, setGreetings] = useState('')
+  const [mySkills, setMySkills] = useState<SkillData[]>([]);
+  const [gretting, setGretting] = useState('');
+
 
   function handleAddNewSkill() {
-    setMySkills(oldState => [...oldState, newSkill]);
+    const data = {
+      id: String(new Date().getTime()),
+      name: newSkill
+    }
+
+    setMySkills(oldState => [...oldState, data]);
   }
+
 
   useEffect(() => {
     const currentHour = new Date().getHours();
 
     if (currentHour < 12) {
-      setGreetings('Bom dia')
-    } else if (currentHour >= 12 && currentHour < 18) {
-      setGreetings('Boa tarde')
-    } else {
-      setGreetings('Boa noite')
+      setGretting('Good morning');
     }
-  }, []);
+    else if (currentHour >= 12 && currentHour < 18) {
+      setGretting('Good afternoon');
+    } else {
+      setGretting('Good night');
+    }
 
+  }, [])
 
   return (
     <View style={styles.container}>
+
+
       <Text style={styles.title}>
         Welcome, Rodrigo
       </Text>
+
       <Text style={styles.greetings}>
-        {greetings}
+        {gretting}
       </Text>
 
       <TextInput
@@ -51,17 +67,18 @@ export function Home() {
 
       <Button onPress={handleAddNewSkill} />
 
-
       <Text style={[styles.title, { marginVertical: 50 }]}>
         My Skills
       </Text>
+
       <FlatList
         data={mySkills}
-        keyExtractor={item => item}
+        keyExtractor={item => item.id}
         renderItem={({ item }) => (
-          <SkillCard skill={item} />
+          <SkillCard skill={item.name} />
         )}
       />
+
     </View>
   )
 }
@@ -72,7 +89,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#121015',
     paddingHorizontal: 20,
     paddingVertical: 70,
-    paddingHorizontal: 30
+    paddingHorizontal: 30,
   },
   title: {
     color: '#FFF',
